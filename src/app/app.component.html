@@ -1,0 +1,33 @@
+<clr-main-container>
+  <clr-header class="header-4">
+    <div class="branding">
+      <a class="nav-link">
+        <div class="title">Twangular</div>
+      </a>
+    </div>
+
+
+    <div [hidden]="authenticated()">
+      <button (click)="getHomeTimeline()">Login</button>
+    </div>
+
+    <div [hidden]="!authenticated()">
+      <h2>authenticated</h2>
+      <button (click)="logout()">Logout</button>
+    </div>
+
+    <div class="header-actions" *ngIf="user">
+      <a class="nav-link">
+        <span class="nav-text">
+          <img [src]="user.profile_image_url_https" class="avatar" />
+          @{{user.screen_name}}
+        </span>
+      </a>
+    </div>
+  </clr-header>
+  <div class="content-container">
+    <main class="content-area">
+      <app-tweets></app-tweets>
+    </main>
+  </div>
+</clr-main-container>
