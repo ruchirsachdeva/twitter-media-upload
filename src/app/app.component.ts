@@ -30,7 +30,7 @@ export class AppComponent {
   }
 
   getHomeTimeline() {
-    window.location.href = 'http://localhost:4200/api/login';
+    window.location.href = 'https://twitter-media-app.herokuapp.com/api/login';
     //  this.twitter.login().subscribe(access_token => console.log(access_token));
   }
 

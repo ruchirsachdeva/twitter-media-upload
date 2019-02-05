@@ -50,7 +50,7 @@ var twitterAPI = require('node-twitter-api');
 var twitter = new twitterAPI({
   consumerKey: '2JzQRJBPsiL1mtlZVxg6J02BY',
   consumerSecret: 'XCGZe0uNDVsXZtMyKEYDKcYa29aFncfkbqCS2u1i6v8ucRp8nU',
-  callback: 'http://localhost:4200/callback'
+  callback: 'https://twitter-media-app.herokuapp.com/callback'
 });
 
 var request = require('request');
