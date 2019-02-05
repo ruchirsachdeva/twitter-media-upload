@@ -40,6 +40,7 @@
     "ngx-twitter-api": "^0.4.2",
     "node-twitter-api": "^1.8.0",
     "rxjs": "~6.3.3",
+    "stream-buffers": "^3.0.2",
     "twit": "^2.2.11",
     "zone.js": "~0.8.26"
   },

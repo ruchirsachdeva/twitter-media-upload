@@ -1,7 +1,7 @@
 <div [hidden]="!authenticated()">
   <h1>Welcome to the PD Social App</h1>
   <!--<app-user></app-user>-->
-  <!-- <app-tweets></app-tweets>-->
+
   <!-- <button mat-button (click)="upload()">Upload</button>-->
 
   <mat-radio-group class="example-radio-group" (change)="changeComboo($event)" [(ngModel)]="selectedMedia" name="radioGroup">
@@ -38,6 +38,8 @@
   </form>
 
 
+Your tweets...
+<app-tweets></app-tweets>
 </div>
 
 

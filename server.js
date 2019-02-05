@@ -2,6 +2,8 @@ const express = require('express'), http = require('http'), path = require('path
 const fs = require('fs');
 const fileUpload = require('express-fileupload');
 
+var assert = require('assert');
+
 
 const app = express();
 
@@ -147,6 +149,33 @@ getClient(req.query.accessToken, req.query.accessTokenSecret)
 let cache = [];
 let cacheAge = 0;
 
+
+
+app.get('/api/search', (req, res) => {
+  if (Date.now() - cacheAge > 60000) {
+  cacheAge = Date.now();
+  const params = { tweet_mode: 'extended', count: 200 };
+  if (req.query.since) {
+    params.since_id = req.query.since;
+  }
+  console.log(req.query.accessToken);
+  console.log(req.query.accessTokenSecret);
+  getClient(req.query.accessToken, req.query.accessTokenSecret)
+    .get(`statuses/user_timeline`, params)
+    .then(timeline => {
+    cache = timeline;
+  res.send(timeline);
+})
+.catch(error => res.send(error));
+} else {
+  res.send(cache);
+}
+});
+
+
+
+
+
 app.get('/api/home', (req, res) => {
   if (Date.now() - cacheAge > 60000) {
   cacheAge = Date.now();
@@ -201,6 +230,7 @@ var tokens = JSON.parse(blobToken);
 
 var accessToken = tokens.accessToken;
 var accessTokenSecret = tokens.accessTokenSecret;
+var status = tokens.status;
 console.log(accessToken);
 console.log(accessTokenSecret);
 
@@ -226,7 +256,7 @@ var b64content = file.data.toString('base64');
     .post('media/metadata/create', meta_params, function (err, data, response) {
     if (!err) {
       // now we can reference the media and post a tweet (media will attach to the tweet)
-      var params = { status: req.body.status, media_ids: [mediaIdStr] };
+      var params = { status: status, media_ids: [mediaIdStr] };
 
       getClient(accessToken, accessTokenSecret)
       .post('statuses/update', params, function (err, data, response) {
@@ -268,11 +298,15 @@ if (Object.keys(req.files).length == 0) {
 var file = req.files.sampleFile;
 
 console.log(file);
-
-var mediaType = file.type;
-var mediaFileSizeBytes = file.size;
-
 console.log(req);
+
+
+var mediaType = file.mimetype;
+var mediaFileSizeBytes = tokens.size;
+
+
+console.log(mediaType);
+console.log(mediaFileSizeBytes);
 
 //var mediaType = req.body.type;
 //var mediaFileSizeBytes = req.body.size;
@@ -283,14 +317,23 @@ twit.post('media/upload', {
   'media_type': mediaType,
   'total_bytes': mediaFileSizeBytes
 }, function (err, bodyObj, resp) {
- // assert(!err, err);
+  assert(!err, err);
   var mediaIdStr = bodyObj.media_id_string;
 
   var isStreamingFile = true;
   var isUploading = false;
   var segmentIndex = 0;
  // var b64content = file.data.toString('base64');
-  var fStream = file.data;
+
+  var streamBuffers = require('stream-buffers');
+  var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
+    frequency: 10,      // in milliseconds.
+    chunkSize: mediaFileSizeBytes     // in bytes.
+  });
+  myReadableStreamBuffer.put(file.data);
+
+
+  var fStream = myReadableStreamBuffer;
 
   var _finalizeMedia = function (mediaIdStr, cb) {
     twit.post('media/upload', {
@@ -301,7 +344,8 @@ twit.post('media/upload', {
 
   var _checkFinalizeResp = function (err, bodyObj, resp) {
     exports.checkUploadMedia(err, bodyObj, resp)
-    done();
+    res.send(resp);
+    //done();
   }
 
   fStream.on('data', function (buff) {
@@ -337,7 +381,14 @@ twit.post('media/upload', {
 
 
 
+exports.checkUploadMedia = function (err, bodyObj, resp) {
+  assert(!err, err)
 
+  assert(bodyObj)
+  assert(bodyObj.media_id)
+  assert(bodyObj.media_id_string)
+  assert(bodyObj.size)
+}
 
 
 

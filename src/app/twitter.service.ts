@@ -38,7 +38,7 @@ export class TwitterService {
     var params = '?accessToken=' + localStorage.getItem('accessToken') + '&accessTokenSecret=' + localStorage.getItem('accessTokenSecret');
     +`&since=${since}`
 
-    return this.http.get<TwitterResponse>(`${environment.api}/home` + params);
+    return this.http.get<TwitterResponse>(`${environment.api}/search` + params);
   }
 
   action(property: 'favorite'|'retweet', id: string, state: boolean) {
@@ -54,7 +54,9 @@ export class TwitterService {
 
     var req = {
       accessToken: localStorage.getItem('accessToken'),
-      accessTokenSecret: localStorage.getItem('accessTokenSecret')
+      accessTokenSecret: localStorage.getItem('accessTokenSecret'),
+      status: file.status
+
     };
 
     const blobToken = new Blob([JSON.stringify(req)], {
@@ -81,10 +83,11 @@ params.append('accessToken', localStorage.getItem('accessToken'));
   }
 
   mediaChunked (file: {data: File; status: string}) {
-
+console.log(file.data);
     var req = {
       accessToken: localStorage.getItem('accessToken'),
-      accessTokenSecret: localStorage.getItem('accessTokenSecret')
+      accessTokenSecret: localStorage.getItem('accessTokenSecret'),
+      size: file.data.size
     };
 
     const blobToken = new Blob([JSON.stringify(req)], {
