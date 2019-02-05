@@ -1,14 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {TwitterService, TwitterResponse} from "../twitter.service";
 
-export interface Section {
-  name: string;
-  updated: Date;
-}
-export interface Food {
-  value: string;
-  viewValue: string;
-}
 
 @Component({
   selector: 'app-home',
@@ -21,6 +13,7 @@ export class HomeComponent implements OnInit {
 
   selectedMedia: string;
   medias: string[] = ['Image', 'Video'];
+  public showSpinner: boolean = false;
 
 
   constructor(private twitter: TwitterService) {
@@ -62,17 +55,23 @@ export class HomeComponent implements OnInit {
   upload() {
     console.log('upload');
     console.log(this.file.isimage);
+    this.showLoadingSpinner();
+
     if(this.file.isimage) {
     this.twitter.media(this.file)
       .subscribe((res: TwitterResponse) => {
         console.log('got media response');
         console.log(res);
+        // response received so hide spinner now
+        this.hideLoadingSpinner();
       });
     } else {
       this.twitter.mediaChunked(this.file)
         .subscribe((res: TwitterResponse) => {
           console.log('got mediachunked response');
           console.log(res);
+          // response received so hide spinner now
+          this.hideLoadingSpinner();
         });
     }
   }
@@ -84,6 +83,18 @@ export class HomeComponent implements OnInit {
 
     return notExists('accessToken', 'undefined') && notExists('accessTokenSecret', 'undefined')
       && notExists('accessToken', null) && notExists('accessTokenSecret', null);
+  }
+
+
+
+
+
+  showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  hideLoadingSpinner() {
+    this.showSpinner = false;
   }
 
 }

@@ -1,6 +1,6 @@
 <div [hidden]="!authenticated()">
   <h1>Welcome to the PD Social App</h1>
-  <!--<app-user></app-user>-->
+  <app-user></app-user>
 
   <!-- <button mat-button (click)="upload()">Upload</button>-->
 
@@ -36,9 +36,13 @@
     <button type="submit" class="btn btn-primary">Submit</button>
 
   </form>
+  <div *ngIf="showSpinner" class="spinner">
+    <!-- svg or gif of spinner  -->
+  </div>
 
 
 Your tweets...
+
 <app-tweets></app-tweets>
 </div>
 
