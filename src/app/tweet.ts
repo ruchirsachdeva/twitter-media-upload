@@ -58,6 +58,7 @@ export class Tweet {
     follow_request_sent: boolean;
   };
   retweet_count: number;
+  favourites_count: number
   favorited: boolean;
   retweeted: boolean;
   lang: string;

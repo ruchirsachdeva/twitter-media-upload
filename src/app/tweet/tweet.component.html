@@ -2,7 +2,7 @@
   <img [src]="tweet.user.profile_image_url_https" class="avatar" /> {{tweet.user.name}} (@{{tweet.user.screen_name}})
   <span *ngIf="retweet" class="retweeted"><clr-icon shape="sync"></clr-icon> Retweeted by {{retweet.user.name}} (@{{retweet.user.screen_name}})</span>
   <div class="card-header-actions">
-    <button type="button" class="btn btn-icon" [ngClass]="{'btn-success': tweet.favorited}" (click)="toggleAction('favorite')"><clr-icon shape="heart"></clr-icon> {{tweet.favorite_count}}</button>
+    <button type="button" class="btn btn-icon" [ngClass]="{'btn-success': tweet.favorited}" (click)="toggleAction('favorite')"><clr-icon shape="heart"></clr-icon> {{tweet.favourites_count}}</button>
     <button type="button" class="btn btn-icon" [ngClass]="{'btn-success': tweet.retweeted}" (click)="toggleAction('retweet')"><clr-icon shape="share"></clr-icon> {{tweet.retweet_count}}</button>
   </div>
 </div>
@@ -13,13 +13,13 @@
   <p class="card-text" [innerHTML]="tweet | tweet"></p>
 </div>
 <div class="card-footer" *ngIf="!retweet">
-    {{tweet.created_at | amTimeAgo}} 
-    <clr-icon shape="minus"></clr-icon> 
+    {{tweet.created_at | amTimeAgo}}
+    <clr-icon shape="minus"></clr-icon>
     {{tweet.created_at | date:'medium'}}
 </div>
 <div class="card-footer" *ngIf="retweet">
-    {{retweet.created_at | amTimeAgo}} 
-    <clr-icon shape="minus"></clr-icon> 
+    {{retweet.created_at | amTimeAgo}}
+    <clr-icon shape="minus"></clr-icon>
     {{retweet.created_at | date:'medium'}}
 </div>
 <clr-modal [(clrModalOpen)]="media" *ngIf="tweet.entities.media" clrModalSize="lg">
