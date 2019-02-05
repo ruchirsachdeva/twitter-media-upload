@@ -44,4 +44,12 @@ export class TwitterService {
     return this.http.post<TwitterResponse>(`${environment.api}/${property}/${id}`, req);
   }
 
+  media() {
+    var req = {
+      accessToken:localStorage.getItem('accessToken'),
+      accessTokenSecret: localStorage.getItem('accessTokenSecret')};
+    console.log('posting');
+    return this.http.post<TwitterResponse>(`${environment.api}/media`, req);
+  }
+
 }

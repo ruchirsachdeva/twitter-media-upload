@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {TwitterService} from "../twitter.service";
 
 @Component({
   selector: 'app-home',
@@ -7,14 +8,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  constructor(private twitter: TwitterService) { }
 
   ngOnInit() {
+
+  }
+
+  upload() {
+    console.log('component called');
+    this.twitter.media();
   }
 
   authenticated() {
-    console.log(localStorage.getItem('accessToken'));
-    console.log(localStorage.getItem('accessTokenSecret'));
     function notExists(key: string, val: any) {
       return localStorage.getItem(key) !== val;
     }

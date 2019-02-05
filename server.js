@@ -1,4 +1,6 @@
 const express = require('express'), http = require('http'), path = require('path');
+const fs = require('fs');
+
 const app = express();
 
 app.use(express.static(__dirname+'/dist/web-mobile-dev-assignment1'));
@@ -164,9 +166,9 @@ app.post('/api/favorite/:id', (req, res) => {
   const path = req.body.state ? 'create' : 'destroy';
 
 
-console.log(req.query.accessToken);
-console.log(req.query.accessTokenSecret);
-getClient(req.query.accessToken, req.query.accessTokenSecret)
+console.log(req.body.accessToken);
+console.log(req.body.accessTokenSecret);
+getClient(req.body.accessToken, req.body.accessTokenSecret)
   .post(`favorites/${path}`, { id: req.params.id })
   .then(tweet => res.send(tweet))
 .catch(error => res.send(error));
@@ -175,15 +177,46 @@ getClient(req.query.accessToken, req.query.accessTokenSecret)
 app.post('/api/retweet/:id', (req, res) => {
   const path = req.body.state ? 'retweet' : 'unretweet';
 
-console.log(req.query.accessToken);
-console.log(req.query.accessTokenSecret);
-getClient(req.query.accessToken, req.query.accessTokenSecret)
+console.log(req.body.accessToken);
+console.log(req.body.accessTokenSecret);
+getClient(req.body.accessToken, req.body.accessTokenSecret)
   .post(`statuses/retweet/${req.params.id}`)
   .then(tweet => res.send(tweet))
 .catch(error => res.send(error));
 });
 
 
+app.post('/api/media', (req, res) => {
+  console.log('/api/media');
+  console.log(req.body.accessToken);
+console.log(req.body.accessTokenSecret);
+  var b64content = fs.readFileSync('C:/Users/Public/Pictures/Desert.jpg', { encoding: 'base64' });
+
+// first we must post the media to Twitter
+  getClient(req.body.accessToken, req.body.accessTokenSecret)
+    .post('media/upload', { media_data: b64content }, function (err, data, response) {
+  // now we can assign alt text to the media, for use by screen readers and
+  // other text-based presentations and interpreters
+  var mediaIdStr = data.media_id_string;
+  var altText = "Small flowers in a planter on a sunny balcony, blossoming.";
+  var meta_params = { media_id: mediaIdStr, alt_text: { text: altText } };
+
+  getClient(req.body.accessToken, req.body.accessTokenSecret)
+    .post('media/metadata/create', meta_params, function (err, data, response) {
+    if (!err) {
+      // now we can reference the media and post a tweet (media will attach to the tweet)
+      var params = { status: 'loving life #nofilter', media_ids: [mediaIdStr] };
+
+      getClient(req.body.accessToken, req.body.accessTokenSecret)
+      .post('statuses/update', params, function (err, data, response) {
+        console.log(data);
+        res.send(data);
+      })
+    }
+  })
+})
+
+});
 
 
 console.log('Console listening!');
