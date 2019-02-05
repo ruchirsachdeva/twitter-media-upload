@@ -1,8 +1,42 @@
 <div [hidden]="!authenticated()">
   <h1>Welcome to the PD Social App</h1>
-  <app-user></app-user>
- <!-- <app-tweets></app-tweets>-->
-  <button mat-button (click)="upload()">Upload</button>
+  <!--<app-user></app-user>-->
+  <!-- <app-tweets></app-tweets>-->
+  <!-- <button mat-button (click)="upload()">Upload</button>-->
+
+  <mat-radio-group class="example-radio-group" (change)="changeComboo($event)" [(ngModel)]="selectedMedia" name="radioGroup">
+    <mat-radio-button class="example-radio-button" *ngFor="let media of medias" [value]="media">
+      {{media}}
+    </mat-radio-button>
+  </mat-radio-group>
+
+  <form (ngSubmit)="upload()">
+    <div class="form-group example-selected-value">
+      <label for="status">Add status for uploading {{ selectedMedia }}</label> <input type="text" class="form-control"
+                                                                                      id="status" name="status"
+                                                                                      [(ngModel)]="file.status"/>
+    </div>
+
+
+    <div *ngIf="selectedMedia=='Image'">
+      <div class="form-group">
+        <label>Add {{ selectedMedia }}:</label>
+        <button type="button" mat-raised-button (click)="fileInput.click()">Choose Image</button>
+        <input hidden (change)="onImageSelected(fileInput.files)" #fileInput type="file" accept="image/*" id="file">
+      </div>
+    </div>
+    <div *ngIf="selectedMedia=='Video'">
+      <div class="form-group">
+        <label>Add {{ selectedMedia }}:</label>
+        <button type="button" mat-raised-button (click)="fileInput.click()">Choose Video</button>
+        <input hidden (change)="onVideoSelected(fileInput.files)" #fileInput type="file" accept="video/*" id="videofile">
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+  </form>
+
 
 </div>
 
@@ -11,4 +45,8 @@
 
 <div [hidden]="authenticated()">
   <p>Login using Twitter to upload media</p>
+
+
+
+
 </div>

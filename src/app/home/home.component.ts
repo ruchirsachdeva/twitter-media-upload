@@ -1,5 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import {TwitterService} from "../twitter.service";
+import {Component, OnInit} from '@angular/core';
+import {TwitterService, TwitterResponse} from "../twitter.service";
+
+export interface Section {
+  name: string;
+  updated: Date;
+}
+export interface Food {
+  value: string;
+  viewValue: string;
+}
 
 @Component({
   selector: 'app-home',
@@ -8,15 +17,64 @@ import {TwitterService} from "../twitter.service";
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private twitter: TwitterService) { }
+  file = {data: null, status: '', size: 0, type: '', isimage:true};
+
+  selectedMedia: string;
+  medias: string[] = ['Image', 'Video'];
+
+
+  constructor(private twitter: TwitterService) {
+  }
 
   ngOnInit() {
+    this.selectedMedia = this.medias[0];
+  }
 
+  changeComboo(event) {
+    console.log('chnaged', event && event.value);
+  }
+
+  onImageSelected(fileInput: any) {
+    this.onFileSelected(fileInput[0]);
+    this.file.isimage = true;
+  }
+
+  onVideoSelected(fileInput: any) {
+    this.onFileSelected(fileInput[0]);
+    this.file.isimage = false;
+  }
+
+  onFileSelected(file: File) {
+    console.log(file);
+  /**  var myReader: FileReader = new FileReader();
+
+    myReader.onloadend = (e) => {
+      this.file.data = myReader.result;
+      console.log(myReader.result);
+    }
+    myReader.readAsDataURL(file);*/
+
+    this.file.data = file;
+    this.file.size = file.size;
+    this.file.type = file.type;
   }
 
   upload() {
-    console.log('component called');
-    this.twitter.media();
+    console.log('upload');
+    console.log(this.file.isimage);
+    if(this.file.isimage) {
+    this.twitter.media(this.file)
+      .subscribe((res: TwitterResponse) => {
+        console.log('got media response');
+        console.log(res);
+      });
+    } else {
+      this.twitter.mediaChunked(this.file)
+        .subscribe((res: TwitterResponse) => {
+          console.log('got mediachunked response');
+          console.log(res);
+        });
+    }
   }
 
   authenticated() {

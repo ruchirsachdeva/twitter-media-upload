@@ -1,5 +1,7 @@
 const express = require('express'), http = require('http'), path = require('path');
 const fs = require('fs');
+const fileUpload = require('express-fileupload');
+
 
 const app = express();
 
@@ -9,6 +11,10 @@ app.listen(process.env.PORT||4200);
 
 app.use(require('cors')());
 app.use(require('body-parser').json());
+
+app.use(fileUpload());
+
+
 
 const Twitter = require('twit');
 
@@ -188,12 +194,27 @@ getClient(req.body.accessToken, req.body.accessTokenSecret)
 
 app.post('/api/media', (req, res) => {
   console.log('/api/media');
-  console.log(req.body.accessToken);
-console.log(req.body.accessTokenSecret);
-  var b64content = fs.readFileSync('C:/Users/Public/Pictures/Desert.jpg', { encoding: 'base64' });
 
+
+var blobToken = req.files.id.data;
+var tokens = JSON.parse(blobToken);
+
+var accessToken = tokens.accessToken;
+var accessTokenSecret = tokens.accessTokenSecret;
+console.log(accessToken);
+console.log(accessTokenSecret);
+
+if (Object.keys(req.files).length == 0) {
+  return res.status(400).send('No files were uploaded.');
+}
+
+// The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+var file = req.files.sampleFile;
+//var bitmap = fs.readFileSync(file.buffer);
+//var b64content = new Buffer(bitmap).toString('base64');
+var b64content = file.data.toString('base64');
 // first we must post the media to Twitter
-  getClient(req.body.accessToken, req.body.accessTokenSecret)
+  getClient(accessToken, accessTokenSecret)
     .post('media/upload', { media_data: b64content }, function (err, data, response) {
   // now we can assign alt text to the media, for use by screen readers and
   // other text-based presentations and interpreters
@@ -201,22 +222,123 @@ console.log(req.body.accessTokenSecret);
   var altText = "Small flowers in a planter on a sunny balcony, blossoming.";
   var meta_params = { media_id: mediaIdStr, alt_text: { text: altText } };
 
-  getClient(req.body.accessToken, req.body.accessTokenSecret)
+      getClient(accessToken, accessTokenSecret)
     .post('media/metadata/create', meta_params, function (err, data, response) {
     if (!err) {
       // now we can reference the media and post a tweet (media will attach to the tweet)
-      var params = { status: 'loving life #nofilter', media_ids: [mediaIdStr] };
+      var params = { status: req.body.status, media_ids: [mediaIdStr] };
 
-      getClient(req.body.accessToken, req.body.accessTokenSecret)
+      getClient(accessToken, accessTokenSecret)
       .post('statuses/update', params, function (err, data, response) {
         console.log(data);
         res.send(data);
-      })
+      });
     }
-  })
-})
+  });
+});
 
 });
+
+
+
+
+
+
+
+
+
+
+app.post('/api/mediachunked', (req, res) => {
+  console.log('/api/mediachunked');
+
+
+var blobToken = req.files.id.data;
+var tokens = JSON.parse(blobToken);
+
+var accessToken = tokens.accessToken;
+var accessTokenSecret = tokens.accessTokenSecret;
+console.log(accessToken);
+console.log(accessTokenSecret);
+
+if (Object.keys(req.files).length == 0) {
+  return res.status(400).send('No files were uploaded.');
+}
+
+// The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+var file = req.files.sampleFile;
+
+console.log(file);
+
+var mediaType = file.type;
+var mediaFileSizeBytes = file.size;
+
+console.log(req);
+
+//var mediaType = req.body.type;
+//var mediaFileSizeBytes = req.body.size;
+
+var twit = getClient(accessToken, accessTokenSecret);
+twit.post('media/upload', {
+  'command': 'INIT',
+  'media_type': mediaType,
+  'total_bytes': mediaFileSizeBytes
+}, function (err, bodyObj, resp) {
+ // assert(!err, err);
+  var mediaIdStr = bodyObj.media_id_string;
+
+  var isStreamingFile = true;
+  var isUploading = false;
+  var segmentIndex = 0;
+ // var b64content = file.data.toString('base64');
+  var fStream = file.data;
+
+  var _finalizeMedia = function (mediaIdStr, cb) {
+    twit.post('media/upload', {
+      'command': 'FINALIZE',
+      'media_id': mediaIdStr
+    }, cb)
+  }
+
+  var _checkFinalizeResp = function (err, bodyObj, resp) {
+    exports.checkUploadMedia(err, bodyObj, resp)
+    done();
+  }
+
+  fStream.on('data', function (buff) {
+    fStream.pause();
+    isStreamingFile = false;
+    isUploading = true;
+
+    twit.post('media/upload', {
+      'command': 'APPEND',
+      'media_id': mediaIdStr,
+      'segment_index': segmentIndex,
+      'media': buff.toString('base64'),
+    }, function (err, bodyObj, resp) {
+      assert(!err, err);
+      isUploading = false;
+
+      if (!isStreamingFile) {
+        _finalizeMedia(mediaIdStr, _checkFinalizeResp);
+      }
+    });
+  });
+
+  fStream.on('end', function () {
+    isStreamingFile = false;
+
+    if (!isUploading) {
+      _finalizeMedia(mediaIdStr, _checkFinalizeResp);
+    }
+  });
+});
+
+});
+
+
+
+
+
 
 
 console.log('Console listening!');

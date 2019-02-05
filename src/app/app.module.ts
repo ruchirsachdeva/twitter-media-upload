@@ -11,15 +11,20 @@ import {TweetPipe} from "./tweet.pipe";
 import { ClarityModule } from '@clr/angular';
 import { MomentModule } from 'angular2-moment';
 
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
+
 import {
   MatButtonModule, MatCardModule, MatInputModule, MatListModule, MatToolbarModule,
-  MatMenuModule, MatIconModule, MatTableModule, MatProgressSpinnerModule, MatSortModule, MatPaginatorModule
+  MatMenuModule, MatIconModule, MatTableModule, MatRadioModule, MatProgressSpinnerModule, MatSortModule, MatPaginatorModule
 } from '@angular/material';
 
 
 import { UserComponent } from './user/user.component';
 import {HomeComponent} from "./home/home.component";
 import {LoginComponent} from "./login/login.component";
+
 
 @NgModule({
   declarations: [
@@ -46,9 +51,13 @@ import {LoginComponent} from "./login/login.component";
     MatIconModule,
     MatMenuModule,
     MatTableModule,
+    MatRadioModule,
     MatPaginatorModule,
     MatSortModule,
     MatProgressSpinnerModule,
+    FormsModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
   ],
   providers: [
   ],

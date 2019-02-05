@@ -35,8 +35,6 @@ export class AppComponent {
   }
 
   authenticated() {
-    console.log(localStorage.getItem('accessToken'));
-    console.log(localStorage.getItem('accessTokenSecret'));
     function notExists(key: string, val: any) {
       return localStorage.getItem(key) !== val;
     }
