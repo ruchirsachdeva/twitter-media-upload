@@ -4,7 +4,7 @@
     <mat-toolbar-row>
       <div (click)="redirect('home')">Twitter media app</div>
       <div [hidden]="authenticated()">
-        <button mat-button (click)="getHomeTimeline()">Twitter</button>
+        <button mat-button (click)="getHomeTimeline()">Login</button>
       </div>
       <div [hidden]="!authenticated()">
         <button mat-button (click)="redirect('home')">Home</button>
