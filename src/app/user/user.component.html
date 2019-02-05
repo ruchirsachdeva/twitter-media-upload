@@ -1,0 +1,32 @@
+<div [hidden]="!authenticated()">
+  <mat-card>
+    <mat-card-header>User profile</mat-card-header>
+    <mat-card-content>
+
+      <div>
+
+        <a class="nav-link">
+        <span class="nav-text">
+          <img [src]="user.profile_image_url_https" class="avatar" />
+          @{{user.screen_name}}
+        </span>
+      </a>
+
+      <!--  <div class="ng-scope layout-row">
+
+          <div class="flex">{{user.username}}</div>
+          <div class="flex-20">{{user.role.name}}</div>
+
+        </div>
+        <div class="ng-scope layout-column">
+
+          <div class="flex-33">{{user.organization.name}}</div>
+          <div class="flex-66">{{user.email}}</div>
+
+        </div>-->
+
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+</div>

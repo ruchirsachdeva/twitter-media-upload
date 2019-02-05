@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {FacebookService, InitParams, LoginResponse, UIResponse, UIParams} from "ngx-facebook";
 import {TwitterService, TokenResponse, TwitterResponse} from './twitter.service';
 import {Router} from "@angular/router";
 
@@ -15,21 +14,10 @@ export class AppComponent {
   result = '';
   user;
 
-  constructor(private fb: FacebookService, private twitter: TwitterService, private router: Router) {
+  constructor(private twitter: TwitterService, private router: Router) {
 
-    let initParams: InitParams = {
-      appId: '203064913467897',
-      xfbml: true,
-      version: 'v2.8'
-    };
-
-    fb.init(initParams);
 
     this.updateToken();
-    // this.twitter.login().subscribe(access_token => console.log(access_token));
-
-    //  this.loginWithFacebook(); // nothing happens in this call, but ui tag works ??
-    // this.share();  // nothing happens in this call, but ui tag works ??
 
     if (this.authenticated()) {
       this.twitter.user().subscribe((user: TwitterResponse) => {
@@ -59,8 +47,7 @@ export class AppComponent {
 
   logout() {
     localStorage.clear();
-    this.router.navigateByUrl('/');
-
+    this.router.navigateByUrl('/login');
   }
 
   updateToken() {
@@ -79,25 +66,8 @@ export class AppComponent {
   }
 
 
-  loginWithFacebook(): void {
-
-    this.fb.login()
-      .then((response: LoginResponse) => console.log(response))
-      .catch((error: any) => console.error(error));
-
-  }
-
-  share() {
-
-    let params: UIParams = {
-      href: 'https://github.com/zyra/ngx-facebook',
-      method: 'share'
-    };
-
-    this.fb.ui(params)
-      .then((res: UIResponse) => console.log(res))
-      .catch((e: any) => console.error(e));
-
+  redirect(pagename: string) {
+    this.router.navigate(['/' + pagename]);
   }
 
 

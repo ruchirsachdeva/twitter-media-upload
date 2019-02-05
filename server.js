@@ -16,6 +16,13 @@ app.get('/', function(req,res) {
   res.sendFile(path.join(__dirname,'/dist/web-mobile-dev-assignment1/index.html'));
 });
 
+app.get('/login', function(req,res) {
+  res.sendFile(path.join(__dirname,'/dist/web-mobile-dev-assignment1/index.html'));
+});
+app.get('/home', function(req,res) {
+  res.sendFile(path.join(__dirname,'/dist/web-mobile-dev-assignment1/index.html'));
+});
+
 function getClient(access_token, access_token_secret) {
 
   return new Twitter({
@@ -100,7 +107,7 @@ twitter.getAccessToken(req.query.oauth_token, req.session.requestTokenSecret, re
     console.log('accessToken='+req.session.accessToken);
     console.log('accessTokenSecret ='+req.session.accessTokenSecret);
 
-    res.redirect("/");
+    res.redirect("/home");
     //store accessToken and accessTokenSecret somewhere (associated to the user)
     //Step 4: Verify Credentials belongs here
   }

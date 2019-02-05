@@ -1,0 +1,12 @@
+<div [hidden]="!authenticated()">
+  <h1>Welcome to the PD Social App</h1>
+  <app-user></app-user>
+  <app-tweets></app-tweets>
+</div>
+
+
+
+
+<div [hidden]="authenticated()">
+  <p>Login using Twitter to upload media</p>
+</div>
