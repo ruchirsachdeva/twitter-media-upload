@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {TwitterService, TokenResponse, TwitterResponse} from './twitter.service';
 import {Router} from "@angular/router";
 
@@ -9,7 +9,7 @@ import {Router} from "@angular/router";
   providers: [TwitterService]
 
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'web-mobile-dev-assignment1';
   result = '';
   user;
@@ -17,16 +17,31 @@ export class AppComponent {
   constructor(private twitter: TwitterService, private router: Router) {
 
 
+
+  }
+
+  ngOnInit() {
     this.updateToken();
-
     if (this.authenticated()) {
-      this.twitter.user().subscribe((user: TwitterResponse) => {
-        console.log('got response');
-        console.log(user);
-        this.user = user.data;
-
-      });
+      console.log(localStorage.getItem('accessToken'));
+      this.router.navigateByUrl('/home');
     }
+    else {
+      console.log('updateToken');
+      this.twitter.authenticated()
+        .subscribe((response: TokenResponse) => {
+          console.log(response.accessToken);
+          localStorage.setItem('accessToken', response.accessToken);
+          localStorage.setItem('accessTokenSecret', response.accessTokenSecret);
+          if (this.authenticated()) {
+            console.log(localStorage.getItem('accessToken'));
+            this.router.navigateByUrl('/home');
+          }else {
+            this.router.navigateByUrl('/login');
+          }
+        });
+    }
+
   }
 
   getHomeTimeline() {
@@ -40,27 +55,21 @@ export class AppComponent {
     }
 
     return notExists('accessToken', 'undefined') && notExists('accessTokenSecret', 'undefined')
-      && notExists('accessToken', null) && notExists('accessTokenSecret', null);
+      && notExists('accessToken', null) && notExists('accessTokenSecret', null)
+      && notExists('accessToken', 'null') && notExists('accessTokenSecret', 'null');
   }
 
   logout() {
     localStorage.clear();
-    this.router.navigateByUrl('/login');
+    this.twitter.logout()
+      .subscribe((user: TwitterResponse) => {
+        console.log('logged out');
+        this.router.navigateByUrl('/login');
+      });
   }
 
   updateToken() {
-    if (this.authenticated()) {
-      console.log(localStorage.getItem('accessToken'));
-    }
-    else {
-      console.log('updateToken');
-      this.twitter.authenticated()
-        .subscribe((response: TokenResponse) => {
-          console.log(response.accessToken);
-          localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('accessTokenSecret', response.accessTokenSecret);
-        });
-    }
+
   }
 
 

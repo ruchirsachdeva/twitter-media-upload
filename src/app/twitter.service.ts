@@ -29,6 +29,10 @@ export class TwitterService {
     return this.http.get<TwitterResponse>(`${environment.api}/login`, {});
   }
 
+  logout() {
+    return this.http.get<TwitterResponse>(`${environment.api}/logout`, {});
+  }
+
   authenticated() {
     return this.http.get<TokenResponse>(`${environment.api}/authenticated`, {});
   }

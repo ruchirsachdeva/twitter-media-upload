@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {TwitterService, TwitterResponse} from "../twitter.service";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -16,11 +17,14 @@ export class HomeComponent implements OnInit {
   public showSpinner: boolean = false;
 
 
-  constructor(private twitter: TwitterService) {
+  constructor(private twitter: TwitterService, private router: Router) {
   }
 
   ngOnInit() {
     this.selectedMedia = this.medias[0];
+    if(!this.authenticated()) {
+      this.router.navigateByUrl('/');
+    }
   }
 
   changeComboo(event) {
@@ -82,7 +86,8 @@ export class HomeComponent implements OnInit {
     }
 
     return notExists('accessToken', 'undefined') && notExists('accessTokenSecret', 'undefined')
-      && notExists('accessToken', null) && notExists('accessTokenSecret', null);
+      && notExists('accessToken', null) && notExists('accessTokenSecret', null)
+      && notExists('accessToken', 'null') && notExists('accessTokenSecret', 'null');
   }
 
 

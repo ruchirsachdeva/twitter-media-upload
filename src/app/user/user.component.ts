@@ -17,7 +17,8 @@ export class UserComponent implements OnInit {
     }
 
     return notExists('accessToken', 'undefined') && notExists('accessTokenSecret', 'undefined')
-      && notExists('accessToken', null) && notExists('accessTokenSecret', null);
+      && notExists('accessToken', null) && notExists('accessTokenSecret', null)
+      && notExists('accessToken', 'null') && notExists('accessTokenSecret', 'null');
   }
 
 

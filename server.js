@@ -101,6 +101,18 @@ app.get('/api/login', (req, res) => {
 
 });
 
+app.get('/api/logout', (req, res) => {
+  req.session.requestTokenSecret = null;
+  req.session.accessToken = null;
+  req.query=null;
+  console.log(req.session.requestTokenSecret);
+  console.log(req.session.accessToken);
+
+  res.send(true);
+
+});
+
+
 app.get('/callback', (req, res) => {
   console.log(req.query.oauth_token);
 console.log(req.query.oauth_verifier);
@@ -117,7 +129,7 @@ twitter.getAccessToken(req.query.oauth_token, req.session.requestTokenSecret, re
     console.log('accessToken='+req.session.accessToken);
     console.log('accessTokenSecret ='+req.session.accessTokenSecret);
 
-    res.redirect("/home");
+    res.redirect("/");
     //store accessToken and accessTokenSecret somewhere (associated to the user)
     //Step 4: Verify Credentials belongs here
   }
@@ -152,7 +164,7 @@ let cacheAge = 0;
 
 
 app.get('/api/search', (req, res) => {
-  if (Date.now() - cacheAge > 60000) {
+  if (Date.now() - cacheAge > 6000) {
   cacheAge = Date.now();
   const params = { tweet_mode: 'extended', count: 200 };
   if (req.query.since) {
