@@ -278,8 +278,30 @@ app.post('/api/media', (req, res) => {
 });
 
 
-app.post('/api/twitter/media', (req, res) => {
-  console.log('/api/media');
+app.get('/api/my/home', (req, res) => {
+  if (Date.now() - cacheAge > 60000) {
+    cacheAge = Date.now();
+    const params = {tweet_mode: 'extended', count: 200};
+    if (req.query.since) {
+      params.since_id = req.query.since;
+    }
+    var accessToken = '212347172-8XMAeyunbfcadQQ36ZIkgMnNdaWewQxIY5KrYjRO';
+    var accessTokenSecret = 'YUAOVks4tOMUmcJMhTi5DhUOmdDXTgWysg5WjJePd1nUu';
+
+    getClient(accessToken, accessTokenSecret)
+      .get(`statuses/home_timeline`, params)
+      .then(timeline => {
+        cache = timeline;
+        res.send(timeline);
+      })
+      .catch(error => res.send(error));
+  } else {
+    res.send(cache);
+  }
+});
+
+app.post('/api/my/media', (req, res) => {
+  console.log('/api/my/media');
 
 
   var accessToken = '212347172-8XMAeyunbfcadQQ36ZIkgMnNdaWewQxIY5KrYjRO';
