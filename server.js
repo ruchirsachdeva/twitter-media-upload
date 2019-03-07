@@ -284,6 +284,56 @@ var b64content = file.data.toString('base64');
 
 
 
+app.post('/api/twitter/media', (req, res) => {
+  console.log('/api/media');
+
+
+
+  var accessToken = '212347172-8XMAeyunbfcadQQ36ZIkgMnNdaWewQxIY5KrYjRO';
+  var accessTokenSecret = 'YUAOVks4tOMUmcJMhTi5DhUOmdDXTgWysg5WjJePd1nUu';
+  var status =  'status';
+
+
+
+// The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+//var bitmap = fs.readFileSync(file.buffer);
+//var b64content = new Buffer(bitmap).toString('base64');
+  var b64content = req.body.b64content;
+  console.log(b64content);
+  console.log(req);
+  console.log(req.body);
+
+// first we must post the media to Twitter
+  getClient(accessToken, accessTokenSecret)
+    .post('media/upload', { media_data: b64content }, function (err, data, response) {
+      // now we can assign alt text to the media, for use by screen readers and
+      // other text-based presentations and interpreters
+      var mediaIdStr = data.media_id_string;
+      var altText = "Small flowers in a planter on a sunny balcony, blossoming.";
+      var meta_params = { media_id: mediaIdStr, alt_text: { text: altText } };
+
+      getClient(accessToken, accessTokenSecret)
+        .post('media/metadata/create', meta_params, function (err, data, response) {
+          if (!err) {
+            // now we can reference the media and post a tweet (media will attach to the tweet)
+            var params = { status: status, media_ids: [mediaIdStr] };
+
+            getClient(accessToken, accessTokenSecret)
+              .post('statuses/update', params, function (err, data, response) {
+                console.log(data);
+                res.send(data);
+              });
+          }
+        });
+    });
+
+});
+
+
+
+
+
+
 
 
 
