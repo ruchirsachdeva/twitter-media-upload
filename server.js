@@ -278,6 +278,30 @@ app.post('/api/media', (req, res) => {
 });
 
 
+app.get('/api/my/search', (req, res) => {
+  if (Date.now() - cacheAge > 6000) {
+    cacheAge = Date.now();
+    const params = {tweet_mode: 'extended', count: 200};
+    if (req.query.since) {
+      params.since_id = req.query.since;
+    }
+
+    var accessToken = '212347172-8XMAeyunbfcadQQ36ZIkgMnNdaWewQxIY5KrYjRO';
+    var accessTokenSecret = 'YUAOVks4tOMUmcJMhTi5DhUOmdDXTgWysg5WjJePd1nUu';
+
+    getClient(accessToken, accessTokenSecret)
+      .get(`statuses/user_timeline`, params)
+      .then(timeline => {
+        cache = timeline;
+        res.send(timeline);
+      })
+      .catch(error => res.send(error));
+  } else {
+    res.send(cache);
+  }
+});
+
+
 app.get('/api/my/home', (req, res) => {
   if (Date.now() - cacheAge > 60000) {
     cacheAge = Date.now();
